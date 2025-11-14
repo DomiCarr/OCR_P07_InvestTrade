@@ -1,4 +1,4 @@
-Generated 2025-11-14 14:36:37
+Generated 2025-11-14 20:20:22
 
 
 
@@ -14,24 +14,11 @@ Generated 2025-11-14 14:36:37
 # Standard library imports - built-in modules that come with Python
 import os
 
-# Actions file path
-ACTIONS_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'Liste_Actions.csv')
+# Input: Actions file path
+ACTIONS_LIST_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'Liste_Actions.csv')
 
-
-
-===========================================================================================
-    src/controllers/files_utils.py 
-===========================================================================================
-# ----------------------------------------------------------------------
-# files_utils.py
-#
-# Util fonctions related with file management
-# ----------------------------------------------------------------------
-
-# Local Librairies : project-specific modules
-from config import ACTIONS_FILE_PATH
-
-def read_csv(file_path)
+# Output: index.html file path
+HTML_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'html', 'idex.html')
 
 
 ===========================================================================================
@@ -43,20 +30,29 @@ def read_csv(file_path)
 # Util fonctions related with file management
 # ----------------------------------------------------------------------
 
+# Local Librairies : project-specific modules
+from models.actions_list import ActionsList
+from views.show_results import HTMLGenerator
+
 
 class Main:
-    """Initialize app directories, controllers et main menu"""
+    """Initialize app """
 
-    # Read Liste_Actions file
-    liste_actions = ListeActions()
+    def __init__(self):
+        self.actions = ActionsList()
+        self.show_actions()
+    #    self.suggest_invest()
 
-    # Print lise actions
-    liste_actions.show_actions()
+    def show_actions(self):
+        """Generate the HTML page with the actions list"""
+        pageHTML = HTMLGenerator(self.actions_list.actions)
+        pageHTML.generate()
 
 
 if __name__ == "__main__":
     # Start the program
     Main()
+
 
 
 ===========================================================================================
@@ -69,14 +65,18 @@ if __name__ == "__main__":
 # ----------------------------------------------------------------------
 
 class Action:
-    def __init__(self, name, value, return_percentage):
+    """Represents a single action"""
+    def __init__(self,
+                 name: str,
+                 value: float,
+                 return_percent: float):
         self.name = name
         self.value = value
-        self.return_percentage = return_percentage
+        self.return_percentage = return_percent
 
 
 ===========================================================================================
-    src/models/liste_actions.py 
+    src/models/actions_list.py 
 ===========================================================================================
 # ----------------------------------------------------------------------
 # liste_actions.py
@@ -84,18 +84,101 @@ class Action:
 # Model for the list of actions
 # ----------------------------------------------------------------------
 
+# Standard library
+import csv
+
 # Local Librairies : project-specific modules
-from action import Action
+from config import ACTIONS_LIST_FILE_PATH
+from models.action import Action
 
 
-class ListeActions:
+class ActionsList:
+    """Represents the actions list"""
+
     def __init__(self):
         self.actions: list[Action] = []
+        self.file_path = ACTIONS_LIST_FILE_PATH
+        self.load_actions()
+
+    def add(self, action: Action):
+        self._actions.append(action)
+
+
+    def load_actions(self):
+        """Load all actions from CSV file"""
+        try:
+            with open(self.file_path, newline='', encoding='utf-8') as f:
+                reader = csv.reader(f)
+                next(reader)  # skip header
+
+                self.actions = []
+                for row in reader:
+                    try:
+                        action = Action(
+                            row[0].strip(),
+                            float(row[1]),
+                            float(row[2].strip('%')) / 100
+                        )
+                        self.actions.append(action)
+                    except IndexError:
+                        print(f"Row incomplete, skipping: {row}")
+                    except ValueError:
+                        print(f"Skipping invalid row {row}: {row}")
+
+        except FileNotFoundError:
+            print(f"CSV file not found: {self.file_path}")
+
 
 
 ===========================================================================================
     src/views/show_results.py 
 ===========================================================================================
+# ----------------------------------------------------------------------
+# show_results.py
+#
+# Generate the HTML file
+# ----------------------------------------------------------------------
 
+# Standard library
+import os
+
+# Local Librairies : project-specific modules
+from config import HTML_FILE_PATH
+from models.action import Action
+
+
+class HTMLGenerator:
+    """Create the output HTML file"""
+
+    def __init__(self,
+                 actions: list[Action],
+                 file_path: str = HTML_FILE_PATH):
+        self.actions = actions
+        self.file_path = file_path
+
+    def generate(self):
+        """Generate the HTML page"""
+        os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+
+
+        innerHTML = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Invest & Trade</title>
+        </head>
+
+        <body>
+
+        </body>
+
+        </html>
+        """
+
+        with open(self.file_path, "w", encoding="utf-8") as f:
+            f.write(innerHTML)
 
 

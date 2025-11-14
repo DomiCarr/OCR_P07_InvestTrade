@@ -1,0 +1,36 @@
+    /* --------------------------- */
+    /* Reinitialisation navigateur */
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        list-style: none;
+        text-decoration: none;
+    }
+
+    button {
+        border: none;
+        box-shadow: none;
+        outline: none;
+        background: none;
+    }
+
+    /* --------------------------- */
+
+    body {
+        margin-top: 60px;
+        margin-left: 100px;
+        margin-right: 100px;
+        background-color: bisque;
+    }
+
+    header {
+        background-color: #61787F;
+        color: white;
+    }
+
+    table {
+        border-style: solid;
+        border-color: black;
+    }

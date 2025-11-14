@@ -7,5 +7,8 @@
 # Standard library imports - built-in modules that come with Python
 import os
 
-# Actions file path
+# Input: Actions file path
 ACTIONS_LIST_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'Liste_Actions.csv')
+
+# Output: index.html file path
+HTML_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'html', 'index.html')
