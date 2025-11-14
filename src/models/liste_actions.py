@@ -1,11 +1,13 @@
 # ----------------------------------------------------------------------
-# files_utils.py
+# liste_actions.py
 #
-# Util fonctions related with file management
+# Model for the list of actions
 # ----------------------------------------------------------------------
 
 # Local Librairies : project-specific modules
-from config import ACTIONS_FILE_PATH
-from utils.files_utils import read_file
+from action import Action
 
-def read_csv(file_path)
+
+class ListeActions:
+    def __init__(self):
+        self.actions: list[Action] = []
