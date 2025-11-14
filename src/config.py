@@ -8,4 +8,4 @@
 import os
 
 # Actions file path
-ACTIONS_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'Liste_Actions.csv')
+ACTIONS_LIST_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'Liste_Actions.csv')

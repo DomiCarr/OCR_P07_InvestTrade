@@ -1,0 +1,101 @@
+Generated 2025-11-14 14:36:37
+
+
+
+===========================================================================================
+    src/config.py 
+===========================================================================================
+# ----------------------------------------------------------------------
+# config.py
+#
+# Configuration for InestTrade app
+# ----------------------------------------------------------------------
+
+# Standard library imports - built-in modules that come with Python
+import os
+
+# Actions file path
+ACTIONS_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'Liste_Actions.csv')
+
+
+
+===========================================================================================
+    src/controllers/files_utils.py 
+===========================================================================================
+# ----------------------------------------------------------------------
+# files_utils.py
+#
+# Util fonctions related with file management
+# ----------------------------------------------------------------------
+
+# Local Librairies : project-specific modules
+from config import ACTIONS_FILE_PATH
+
+def read_csv(file_path)
+
+
+===========================================================================================
+    src/invest_trade.py 
+===========================================================================================
+# ----------------------------------------------------------------------
+# invest_trade.py
+#
+# Util fonctions related with file management
+# ----------------------------------------------------------------------
+
+
+class Main:
+    """Initialize app directories, controllers et main menu"""
+
+    # Read Liste_Actions file
+    liste_actions = ListeActions()
+
+    # Print lise actions
+    liste_actions.show_actions()
+
+
+if __name__ == "__main__":
+    # Start the program
+    Main()
+
+
+===========================================================================================
+    src/models/action.py 
+===========================================================================================
+# ----------------------------------------------------------------------
+# actions.py
+#
+# Model for 1 action
+# ----------------------------------------------------------------------
+
+class Action:
+    def __init__(self, name, value, return_percentage):
+        self.name = name
+        self.value = value
+        self.return_percentage = return_percentage
+
+
+===========================================================================================
+    src/models/liste_actions.py 
+===========================================================================================
+# ----------------------------------------------------------------------
+# liste_actions.py
+#
+# Model for the list of actions
+# ----------------------------------------------------------------------
+
+# Local Librairies : project-specific modules
+from action import Action
+
+
+class ListeActions:
+    def __init__(self):
+        self.actions: list[Action] = []
+
+
+===========================================================================================
+    src/views/show_results.py 
+===========================================================================================
+
+
+
