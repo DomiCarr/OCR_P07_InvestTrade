@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 # Output file
-output_file="code.txt"
+output_file="src/code.txt"
 
 # Nettoyage de la sortie si elle existe
 rm -f "$output_file"
@@ -10,8 +10,8 @@ rm -f "$output_file"
 echo "Generated $(date '+%Y-%m-%d %H:%M:%S')" >> "$output_file"
 echo "\n\n" >> "$output_file"
 
-# Find all .py files recursively, sort alphabetically, handle spaces
-find . -type f -name "*.py" | sort | while IFS= read -r f; do
+# Find all .py files recursively inside src, sort alphabetically, handle spaces
+find src -type f -name "*.py" | sort | while IFS= read -r f; do
     echo "===========================================================================================" >> "$output_file"
     echo "    $f " >> "$output_file"
     echo "===========================================================================================" >> "$output_file"
