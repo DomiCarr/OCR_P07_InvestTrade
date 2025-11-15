@@ -52,6 +52,7 @@ class HTMLGenerator:
                 <th>Name</th>
                 <th>Value</th>
                 <th>Percentage</th>
+                <th>Profit</th>
             </tr>
         """
         innerHTML = innerHTML + text
@@ -64,6 +65,7 @@ class HTMLGenerator:
                 <td>{action.name}</td>
                 <td>{action.value}</td>
                 <td>{action.return_percentage}</td>
+                <td>{action.profit}</td>
 
             </tr>
         """

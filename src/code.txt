@@ -1,4 +1,4 @@
-Generated 2025-11-14 20:20:22
+Generated 2025-11-15 17:03:58
 
 
 
@@ -18,7 +18,7 @@ import os
 ACTIONS_LIST_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'Liste_Actions.csv')
 
 # Output: index.html file path
-HTML_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'html', 'idex.html')
+HTML_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'html', 'index.html')
 
 
 ===========================================================================================
@@ -39,7 +39,7 @@ class Main:
     """Initialize app """
 
     def __init__(self):
-        self.actions = ActionsList()
+        self.actions_list = ActionsList()
         self.show_actions()
     #    self.suggest_invest()
 
@@ -66,13 +66,15 @@ if __name__ == "__main__":
 
 class Action:
     """Represents a single action"""
-    def __init__(self,
-                 name: str,
-                 value: float,
-                 return_percent: float):
+
+    def __init__(self, name: str, value: float, return_percent: float):
         self.name = name
         self.value = value
         self.return_percentage = return_percent
+
+    @property
+    def profit(self) -> float:
+        return self.value * self.return_percentage
 
 
 ===========================================================================================
@@ -93,24 +95,22 @@ from models.action import Action
 
 
 class ActionsList:
-    """Represents the actions list"""
+    """Represents a list of actions"""
 
-    def __init__(self):
+    def __init__(self, file_path: str = ACTIONS_LIST_FILE_PATH):
         self.actions: list[Action] = []
-        self.file_path = ACTIONS_LIST_FILE_PATH
-        self.load_actions()
+        self.file_path = file_path
+        # self.load_actions()  # plus automatique
 
     def add(self, action: Action):
-        self._actions.append(action)
-
+        self.actions.append(action)
 
     def load_actions(self):
-        """Load all actions from CSV file"""
+        """Load actions from CSV file"""
         try:
             with open(self.file_path, newline='', encoding='utf-8') as f:
                 reader = csv.reader(f)
                 next(reader)  # skip header
-
                 self.actions = []
                 for row in reader:
                     try:
@@ -119,14 +119,14 @@ class ActionsList:
                             float(row[1]),
                             float(row[2].strip('%')) / 100
                         )
-                        self.actions.append(action)
+                        self.add(action)
                     except IndexError:
                         print(f"Row incomplete, skipping: {row}")
                     except ValueError:
                         print(f"Skipping invalid row {row}: {row}")
-
         except FileNotFoundError:
             print(f"CSV file not found: {self.file_path}")
+
 
 
 
@@ -160,23 +160,61 @@ class HTMLGenerator:
         """Generate the HTML page"""
         os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
 
+        title = "Invest & Trade"
 
-        innerHTML = f"""
+        innerHTML = ""
+        text = ""
+
+        """ Generate page top"""
+        text = f"""
         <!DOCTYPE html>
         <html lang="en">
 
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Invest & Trade</title>
+            <link rel="stylesheet" href="./style/style.css">
+            <title>{title}</title>
         </head>
 
         <body>
+            <header>
+                <h1>Invest & Trade</h1>
+            </header>
 
-        </body>
-
-        </html>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Percentage</th>
+                <th>Profit</th>
+            </tr>
         """
+        innerHTML = innerHTML + text
+
+        """Generate the actions tab"""
+        text = ""
+        for action in self.actions:
+            text = text + f"""
+            <tr>
+                <td>{action.name}</td>
+                <td>{action.value}</td>
+                <td>{action.return_percentage}</td>
+                <td>{action.profit}</td>
+
+            </tr>
+        """
+        innerHTML = innerHTML + text
+
+        innerHTML = innerHTML + f"""
+        </table>
+    </main>
+
+</body>
+
+</html>
+"""
+
 
         with open(self.file_path, "w", encoding="utf-8") as f:
             f.write(innerHTML)

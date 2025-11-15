@@ -14,6 +14,7 @@ class Main:
 
     def __init__(self):
         self.actions_list = ActionsList()
+        self.actions_list.load_actions()
         self.show_actions()
     #    self.suggest_invest()
 
