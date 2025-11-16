@@ -11,7 +11,7 @@ import csv
 from config import ACTIONS_LIST_FILE_PATH
 from models.action import Action
 
-load
+
 class ActionsList:
     """Represents a list of actions"""
 
@@ -45,3 +45,20 @@ class ActionsList:
         except FileNotFoundError:
             print(f"CSV file not found: {self.file_path}")
 
+    def calc_invest(self, max: int):
+        """Return a new action list for best invest and max amount """
+
+        new_portfolio = ActionsList()  # create instance
+        new_portfolio.actions = []      # empty the list
+
+        # copy actions list in a temporary list (shallow copie)
+        temp_actions = self.actions[:]
+
+        # sort the temporary list by percentage
+        temp_actions.sort(key=lambda a: a.return_percentage, reverse=True)
+
+        # create the new porfolio with the max amount
+        total = 0
+        for action in temp_actions:
+            total = total + action.return_percentage
+            if total < 500:

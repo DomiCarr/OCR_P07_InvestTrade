@@ -59,7 +59,8 @@ class HTMLGenerator:
 
         """Generate the actions tab"""
         text = ""
-        for action in self.actions:
+        sorted_list = sorted(self.actions, key=lambda a: a.return_percentage, reverse=True)
+        for action in sorted_list:
             text = text + f"""
             <tr>
                 <td>{action.name}</td>

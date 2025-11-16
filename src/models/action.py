@@ -14,4 +14,5 @@ class Action:
 
     @property
     def profit(self) -> float:
-        return self.value * self.return_percentage
+        """Compute profit rounded to 2 decimals"""
+        return round(self.value * self.return_percentage, 2)
