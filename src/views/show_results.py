@@ -10,6 +10,7 @@ import os
 # Local Librairies : project-specific modules
 from config import HTML_FILE_PATH
 from models.action import Action
+from models.actions_list import ActionsList
 
 
 class HTMLGenerator:
@@ -17,8 +18,12 @@ class HTMLGenerator:
 
     def __init__(self,
                  actions: list[Action],
+                 new_portfolio: list[Action],
+                 total_invest,
                  file_path: str = HTML_FILE_PATH):
         self.actions = actions
+        self.new_portfolio = new_portfolio
+        self.total_invest = total_invest
         self.file_path = file_path
 
     def generate(self):
@@ -28,10 +33,8 @@ class HTMLGenerator:
         title = "Invest & Trade"
 
         innerHTML = ""
-        text = ""
 
-        """ Generate page top"""
-        text = f"""
+        innerHTML = f"""
         <!DOCTYPE html>
         <html lang="en">
 
@@ -42,11 +45,15 @@ class HTMLGenerator:
             <title>{title}</title>
         </head>
 
+
         <body>
             <header>
                 <h1>Invest & Trade</h1>
             </header>
 
+        <main>
+                <div class="tab_actions">
+            <div class="title">Portefeuille d'actions</div>
         <table>
             <tr>
                 <th>Name</th>
@@ -55,13 +62,11 @@ class HTMLGenerator:
                 <th>Profit</th>
             </tr>
         """
-        innerHTML = innerHTML + text
 
-        """Generate the actions tab"""
-        text = ""
+        """Generate the actions table"""
         sorted_list = sorted(self.actions, key=lambda a: a.return_percentage, reverse=True)
         for action in sorted_list:
-            text = text + f"""
+            innerHTML = innerHTML + f"""
             <tr>
                 <td>{action.name}</td>
                 <td>{action.value}</td>
@@ -70,17 +75,46 @@ class HTMLGenerator:
 
             </tr>
         """
-        innerHTML = innerHTML + text
 
         innerHTML = innerHTML + f"""
-        </table>
-    </main>
+                </table>
+        </div>
 
-</body>
+                <div class="tab_actions">
+            <div class="title">Propositions d'investissement</div>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Percentage</th>
+                    <th>Profit</th>
+                </tr>
 
-</html>
 """
 
+        """Generate the portfolio table"""
+        for action in self.new_portfolio:
+            innerHTML = innerHTML + f"""
+            <tr>
+                <td>{action.name}</td>
+                <td>{action.value}</td>
+                <td>{action.return_percentage}</td>
+                <td>{action.profit}</td>
+
+            </tr>
+        """
+        innerHTML = innerHTML + f"""
+        </table>
+            <div class="total">
+                Total investi : {self.total_invest}
+            </div>
+        </div>
+        </main>
+
+        </body>
+
+        </html>
+        """
 
         with open(self.file_path, "w", encoding="utf-8") as f:
             f.write(innerHTML)

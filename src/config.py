@@ -12,3 +12,6 @@ ACTIONS_LIST_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', '
 
 # Output: index.html file path
 HTML_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'html', 'index.html')
+
+# max invest
+MAX_INVEST = 500

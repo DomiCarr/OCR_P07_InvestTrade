@@ -1,4 +1,4 @@
-Generated 2025-11-15 17:03:58
+Generated 2025-11-18 17:30:30
 
 
 
@@ -20,6 +20,10 @@ ACTIONS_LIST_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', '
 # Output: index.html file path
 HTML_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'html', 'index.html')
 
+# max invest
+MAX_INVEST = 500
+
+
 
 ===========================================================================================
     src/invest_trade.py 
@@ -33,6 +37,7 @@ HTML_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'html', 'index.ht
 # Local Librairies : project-specific modules
 from models.actions_list import ActionsList
 from views.show_results import HTMLGenerator
+from config import MAX_INVEST
 
 
 class Main:
@@ -40,12 +45,16 @@ class Main:
 
     def __init__(self):
         self.actions_list = ActionsList()
+        self.actions_list.load_actions()
+        self.actions_list.calc_invest()
         self.show_actions()
-    #    self.suggest_invest()
 
     def show_actions(self):
         """Generate the HTML page with the actions list"""
-        pageHTML = HTMLGenerator(self.actions_list.actions)
+        pageHTML = HTMLGenerator(
+            self.actions_list.actions,
+            self.actions_list.new_portfolio.actions,
+            self.actions_list.total_invest)
         pageHTML.generate()
 
 
@@ -74,7 +83,8 @@ class Action:
 
     @property
     def profit(self) -> float:
-        return self.value * self.return_percentage
+        """Compute profit rounded to 2 decimals"""
+        return round(self.value * self.return_percentage, 2)
 
 
 ===========================================================================================
@@ -87,10 +97,12 @@ class Action:
 # ----------------------------------------------------------------------
 
 # Standard library
+from itertools import combinations
 import csv
 
 # Local Librairies : project-specific modules
 from config import ACTIONS_LIST_FILE_PATH
+from config import MAX_INVEST
 from models.action import Action
 
 
@@ -100,6 +112,7 @@ class ActionsList:
     def __init__(self, file_path: str = ACTIONS_LIST_FILE_PATH):
         self.actions: list[Action] = []
         self.file_path = file_path
+        self.new_portfolio = None
         # self.load_actions()  # plus automatique
 
     def add(self, action: Action):
@@ -127,7 +140,66 @@ class ActionsList:
         except FileNotFoundError:
             print(f"CSV file not found: {self.file_path}")
 
+    def calc_invest(self):
+        """Return a new action list for best invest and max amount """
 
+        best_profit = 0.0
+        best_portfolio = None
+
+        temp_actions = self.actions[:]
+        nb_actions = len(temp_actions)
+
+        new_portfolio = ActionsList()  # create instance
+
+        # Test all subsets
+        for r in range(1, nb_actions+1):
+            for subset in combinations(temp_actions, r):
+                # subsets with total_value > MAX_INVEST are ignored
+                total_value = sum(a.value for a in subset)
+
+                # compute the profit of the subset:
+                profit = sum(a.value * a.return_percentage for a in subset)
+
+                # DEBUG : Print subset values:
+                subset_values = ", ".join(str(a.value) for a in subset)
+                print(f"Subset values {subset_values} | "
+                      f"Total : {total_value} | "
+                      f"Profit : {profit} ")
+
+                # save the best combinaison
+                if total_value <= MAX_INVEST and profit > best_profit:
+                    best_profit = profit
+                    best_portfolio = subset
+
+        new_portfolio.actions = list(best_portfolio)
+        self.new_portfolio = new_portfolio
+        self.total_invest = sum(a.value for a in best_portfolio)
+
+"""
+        # copy actions list in a temporary list (shallow copie)
+        temp_actions = self.actions[:]
+
+        # sort the temporary list by percentage
+        temp_actions.sort(key=lambda a: a.return_percentage, reverse=True)
+
+        # create the new porfolio with the max amount
+        total = 0
+        for action in temp_actions:
+            total_invest = total
+            total = total + action.value
+            if total < MAX_INVEST:
+                new_portfolio.add(action)
+            else:
+                break
+
+        self.total_invest = total_invest
+        self.new_portfolio = new_portfolio
+
+        # Debug simple : print portfolio content
+        for a in self.new_portfolio.actions:
+            print(a.name, a.value, a.return_percentage, a.profit)
+        print("Nombre d'actions dans new_portfolio :", len(self.new_portfolio.actions))
+"""
 
 
 ===========================================================================================
@@ -145,6 +217,7 @@ import os
 # Local Librairies : project-specific modules
 from config import HTML_FILE_PATH
 from models.action import Action
+from models.actions_list import ActionsList
 
 
 class HTMLGenerator:
@@ -152,8 +225,12 @@ class HTMLGenerator:
 
     def __init__(self,
                  actions: list[Action],
+                 new_portfolio: list[Action],
+                 total_invest,
                  file_path: str = HTML_FILE_PATH):
         self.actions = actions
+        self.new_portfolio = new_portfolio
+        self.total_invest = total_invest
         self.file_path = file_path
 
     def generate(self):
@@ -163,10 +240,8 @@ class HTMLGenerator:
         title = "Invest & Trade"
 
         innerHTML = ""
-        text = ""
 
-        """ Generate page top"""
-        text = f"""
+        innerHTML = f"""
         <!DOCTYPE html>
         <html lang="en">
 
@@ -177,11 +252,15 @@ class HTMLGenerator:
             <title>{title}</title>
         </head>
 
+
         <body>
             <header>
                 <h1>Invest & Trade</h1>
             </header>
 
+        <main>
+                <div class="tab_actions">
+            <div class="title">Portefeuille d'actions</div>
         <table>
             <tr>
                 <th>Name</th>
@@ -190,12 +269,11 @@ class HTMLGenerator:
                 <th>Profit</th>
             </tr>
         """
-        innerHTML = innerHTML + text
 
-        """Generate the actions tab"""
-        text = ""
-        for action in self.actions:
-            text = text + f"""
+        """Generate the actions table"""
+        sorted_list = sorted(self.actions, key=lambda a: a.return_percentage, reverse=True)
+        for action in sorted_list:
+            innerHTML = innerHTML + f"""
             <tr>
                 <td>{action.name}</td>
                 <td>{action.value}</td>
@@ -204,17 +282,46 @@ class HTMLGenerator:
 
             </tr>
         """
-        innerHTML = innerHTML + text
 
         innerHTML = innerHTML + f"""
-        </table>
-    </main>
+                </table>
+        </div>
 
-</body>
+                <div class="tab_actions">
+            <div class="title">Propositions d'investissement</div>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                    <th>Percentage</th>
+                    <th>Profit</th>
+                </tr>
 
-</html>
 """
 
+        """Generate the portfolio table"""
+        for action in self.new_portfolio:
+            innerHTML = innerHTML + f"""
+            <tr>
+                <td>{action.name}</td>
+                <td>{action.value}</td>
+                <td>{action.return_percentage}</td>
+                <td>{action.profit}</td>
+
+            </tr>
+        """
+        innerHTML = innerHTML + f"""
+        </table>
+            <div class="total">
+                Total investi : {self.total_invest}
+            </div>
+        </div>
+        </main>
+
+        </body>
+
+        </html>
+        """
 
         with open(self.file_path, "w", encoding="utf-8") as f:
             f.write(innerHTML)
