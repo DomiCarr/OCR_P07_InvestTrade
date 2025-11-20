@@ -1,4 +1,4 @@
-Generated 2025-11-18 17:30:30
+Generated 2025-11-19 19:49:50
 
 
 
@@ -109,19 +109,18 @@ from models.action import Action
 class ActionsList:
     """Represents a list of actions"""
 
-    def __init__(self, file_path: str = ACTIONS_LIST_FILE_PATH):
+    def __init__(self):
         self.actions: list[Action] = []
-        self.file_path = file_path
         self.new_portfolio = None
-        # self.load_actions()  # plus automatique
 
+    # self.load_actions()
     def add(self, action: Action):
         self.actions.append(action)
 
     def load_actions(self):
         """Load actions from CSV file"""
         try:
-            with open(self.file_path, newline='', encoding='utf-8') as f:
+            with open(ACTIONS_LIST_FILE_PATH, newline='', encoding='utf-8') as f:
                 reader = csv.reader(f)
                 next(reader)  # skip header
                 self.actions = []
@@ -160,46 +159,22 @@ class ActionsList:
                 # compute the profit of the subset:
                 profit = sum(a.value * a.return_percentage for a in subset)
 
-                # DEBUG : Print subset values:
-                subset_values = ", ".join(str(a.value) for a in subset)
-                print(f"Subset values {subset_values} | "
-                      f"Total : {total_value} | "
-                      f"Profit : {profit} ")
-
                 # save the best combinaison
                 if total_value <= MAX_INVEST and profit > best_profit:
                     best_profit = profit
                     best_portfolio = subset
 
+                    # DEBUG : Print subset values:
+                    subset_values = ", ".join(str(a.value) for a in subset)
+                    print(f"Subset values {subset_values} | "
+                        f"Total : {total_value} | "
+                        f"Profit : {profit} ")
+
         new_portfolio.actions = list(best_portfolio)
         self.new_portfolio = new_portfolio
         self.total_invest = sum(a.value for a in best_portfolio)
 
-"""
-        # copy actions list in a temporary list (shallow copie)
-        temp_actions = self.actions[:]
 
-        # sort the temporary list by percentage
-        temp_actions.sort(key=lambda a: a.return_percentage, reverse=True)
-
-        # create the new porfolio with the max amount
-        total = 0
-        for action in temp_actions:
-            total_invest = total
-            total = total + action.value
-            if total < MAX_INVEST:
-                new_portfolio.add(action)
-            else:
-                break
-
-        self.total_invest = total_invest
-        self.new_portfolio = new_portfolio
-
-        # Debug simple : print portfolio content
-        for a in self.new_portfolio.actions:
-            print(a.name, a.value, a.return_percentage, a.profit)
-        print("Nombre d'actions dans new_portfolio :", len(self.new_portfolio.actions))
-"""
 
 
 ===========================================================================================
