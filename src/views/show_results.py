@@ -20,10 +20,12 @@ class HTMLGenerator:
                  actions: list[Action],
                  new_portfolio: list[Action],
                  total_invest,
+                 total_profit,
                  file_path: str = HTML_FILE_PATH):
         self.actions = actions
         self.new_portfolio = new_portfolio
         self.total_invest = total_invest
+        self.total_profit = total_profit
         self.file_path = file_path
 
     def generate(self):
@@ -70,7 +72,7 @@ class HTMLGenerator:
             <tr>
                 <td>{action.name}</td>
                 <td>{action.value}</td>
-                <td>{action.return_percentage}</td>
+                <td>{action.return_percentage:.2f}</td>
                 <td>{action.profit}</td>
 
             </tr>
@@ -98,7 +100,7 @@ class HTMLGenerator:
             <tr>
                 <td>{action.name}</td>
                 <td>{action.value}</td>
-                <td>{action.return_percentage}</td>
+                <td>{action.return_percentage:.2f}</td>
                 <td>{action.profit}</td>
 
             </tr>
@@ -107,6 +109,7 @@ class HTMLGenerator:
         </table>
             <div class="total">
                 Total investi : {self.total_invest}
+                Profit : {self.total_profit}
             </div>
         </div>
         </main>

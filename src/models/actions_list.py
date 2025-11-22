@@ -70,12 +70,16 @@ class ActionsList:
         start_time = time.time()
         iterations = 0
 
+        # Remove actions with zero value or zero profit to optimize DP table
+        self.actions = [a for a in self.actions if a.value > 0 and a.profit > 0]
+
+
         # Extract values and profits
-        values = [int(a.value) for a in self.actions]  # DP uses int weights
+        values = [int(a.value*100) for a in self.actions]  # DP uses int weights
         profits = [a.profit for a in self.actions]
 
         n = len(values)
-        capacity = int(MAX_INVEST)
+        capacity = int(MAX_INVEST*100)
 
         # CONSOLE LOG :
         print(f"Number of actions: {n}")
@@ -158,6 +162,7 @@ class ActionsList:
 
         self.new_portfolio = new_portfolio
         self.total_invest = sum(a.value for a in new_portfolio.actions)
+        self.total_profit = sum(a.profit for a in new_portfolio.actions)
 
         # CONSOLE LOG :
         print("\n=== FINAL PORTFOLIO ===")
@@ -167,6 +172,7 @@ class ActionsList:
 
         # CONSOLE LOG :
         print(f"TOTAL INVESTED: {self.total_invest}")
+        print(f"PROFIT: {self.total_profit}")
 
         # ---- end timer ----
         elapsed = time.time() - start_time
@@ -221,6 +227,11 @@ class ActionsList:
         new_portfolio.actions = list(best_portfolio)
         self.new_portfolio = new_portfolio
         self.total_invest = sum(a.value for a in best_portfolio)
+        self.total_profit = sum(a.profit for a in best_portfolio)
+
+        # CONSOLE LOG :
+        print(f"TOTAL INVESTED: {self.total_invest}")
+        print(f"PROFIT: {self.total_profit}")
 
         # ---- timers & iteration count ----
         elapsed = time.time() - start_time

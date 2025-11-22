@@ -24,7 +24,9 @@ class Main:
         pageHTML = HTMLGenerator(
             self.actions_list.actions,
             self.actions_list.new_portfolio.actions,
-            self.actions_list.total_invest)
+            self.actions_list.total_invest,
+            self.actions_list.total_profit
+            )
         pageHTML.generate()
 
 
