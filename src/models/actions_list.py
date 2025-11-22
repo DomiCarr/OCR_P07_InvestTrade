@@ -131,6 +131,11 @@ class ActionsList:
                     dp[i][w] = max(profit_excluding_action, profit_including_action)
 
 
+        # Backtracking through the DP table to reconstruct the optimal portfolio.
+        # We start from the last action and full capacity, and for each step,
+        # if dp[i][w] != dp[i-1][w], it means action i was included.
+        # We add that action to the selection and reduce the remaining capacity accordingly.
+        # This phase converts the maximum profit value in the DP table into the actual list of chosen actions.
 
         # CONSOLE LOG : --- Backtracking ---
         print("\n=== BACKTRACKING ===")
