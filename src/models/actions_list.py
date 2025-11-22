@@ -148,10 +148,7 @@ class ActionsList:
 
         for i in range(n, 0, -1):
             if dp[i][w] != dp[i - 1][w]:
-                action = self.actions[i - 1]
                 selected_indexes.append(i - 1)
-                print(f"Selected: {action.name} "
-                    f"(value={action.value}, profit={action.profit})")
                 w -= values[i - 1]
 
         selected_indexes.reverse()
@@ -217,17 +214,16 @@ class ActionsList:
                     best_profit = profit
                     best_portfolio = subset
 
-                    # DEBUG : Print subset values:
-                    subset_values = ", ".join(str(a.value) for a in subset)
-                    # CONSOLE LOG : ---- timers & counters ----
-                    print(f"Subset values {subset_values} | "
-                        f"Total : {total_value} | "
-                        f"Profit : {profit} ")
-
         new_portfolio.actions = list(best_portfolio)
         self.new_portfolio = new_portfolio
         self.total_invest = sum(a.value for a in best_portfolio)
         self.total_profit = sum(a.profit for a in best_portfolio)
+
+        # CONSOLE LOG :
+        print("\n=== FINAL PORTFOLIO ===")
+
+        for a in new_portfolio.actions:
+            print(f"- {a.name} | value={a.value} | profit={a.profit}")
 
         # CONSOLE LOG :
         print(f"TOTAL INVESTED: {self.total_invest}")

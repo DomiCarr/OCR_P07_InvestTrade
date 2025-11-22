@@ -8,9 +8,9 @@
 import os
 
 # Input: Actions file path
-# ACTIONS_LIST_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'Liste_Actions.csv')
-ACTIONS_LIST_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'dataset1.csv')
-#ACTIONS_LIST_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'dataset2.csv')
+ACTIONS_LIST_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'Liste_Actions.csv')
+# ACTIONS_LIST_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'dataset1.csv')
+# ACTIONS_LIST_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'dataset2.csv')
 
 # Output: index.html file path
 HTML_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'html', 'index.html')
