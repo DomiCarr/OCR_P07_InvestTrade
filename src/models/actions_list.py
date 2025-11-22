@@ -58,8 +58,10 @@ class ActionsList:
 
         return self.calc_invest_knapsack()
 
+    # -----------------------------------------------------------------------------
     def calc_invest_knapsack(self):
         """Compute optimal portfolio using dynamic programming knapsack approach"""
+    # -----------------------------------------------------------------------------
 
         # CONSOLE LOG :
         print("\n==================================>>>>>>> KNAPSACK ALGO ===")
@@ -113,15 +115,22 @@ class ActionsList:
                 iterations += 1
 
                 if action_value > w:
-                    # Cannot include current action, keep previous best profit
+                    # Current action is too expensive to include in this capacity (w)
+                    # We cannot take it, so the profit stays the same as without this action
                     dp[i][w] = dp[i - 1][w]
                 else:
-                    # Compute profit if we include the action
-                    include = action_profit + dp[i - 1][w - action_value]
-                    # Profit if we exclude the action
-                    exclude = dp[i - 1][w]
-                    # Choose the maximum of including or excluding the current action
-                    dp[i][w] = max(exclude, include)
+                    # Option 1: Include the current action
+                    # Profit = profit of this action + best profit with remaining capacity
+                    profit_including_action = action_profit + dp[i - 1][w - action_value]
+
+                    # Option 2: Exclude the current action
+                    # Profit = best profit without taking this action
+                    profit_excluding_action = dp[i - 1][w]
+
+                    # Take the better option (maximum profit)
+                    dp[i][w] = max(profit_excluding_action, profit_including_action)
+
+
 
         # CONSOLE LOG : --- Backtracking ---
         print("\n=== BACKTRACKING ===")
@@ -162,8 +171,10 @@ class ActionsList:
         print(f"Elapsed time: {elapsed:.4f} seconds")
         print("=== END CALC_INVEST ===\n")
 
+    # -----------------------------------------------------------------------------
     def calc_invest_force_brute(self):
         """Return a new action list for best invest and max amount """
+    # -----------------------------------------------------------------------------
 
         # CONSOLE LOG :
         print("\n==================================>>>>>>> FORCE BRUTE ALGO ===")
