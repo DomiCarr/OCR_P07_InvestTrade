@@ -15,3 +15,10 @@ HTML_FILE_PATH = os.path.join(os.path.dirname(__file__), '..', 'html', 'index.ht
 
 # max invest
 MAX_INVEST = 500
+
+# ALGO_MODE: choose the algorithm for computing optimal portfolio
+# "knapsack" = knapsack dynamic approach
+# "force_brute" = brute-force all subsets
+#ALGO_MODE = "knapsack"
+ALGO_MODE = "force_brute"
+
